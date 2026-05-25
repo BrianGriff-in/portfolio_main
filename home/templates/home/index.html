@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home — Sreng Seavhou{% endblock %}
+
+{% block content %}
+
+<!-- ══ HERO ══ -->
+<section class="hero-section" id="hero">
+  <div class="container py-5">
+    <div class="row align-items-center g-5">
+
+      <!-- Profile Photo -->
+      <div class="col-lg-4 col-md-5 text-center reveal">
+        <div class="profile-wrapper mx-auto">
+          {% if hero and hero.profile_image %}
+            <img src="{{ hero.profile_image.url }}" alt="{{ hero.name }}" class="profile-img"/>
+          {% else %}
+            <div class="profile-placeholder">
+              <i class="fas fa-user fa-3x"></i>
+              <p class="mt-2 small text-muted">my pic here<br>add from django<br>admin site</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Hero Text -->
+      <div class="col-lg-8 col-md-7 reveal">
+        <p class="font-mono text-accent mb-1 small">Hello, I'm </p>
+        <h1 class="hero-name mb-1">
+          <span id="typed-text" class="text-gradient"></span><span class="typing-cursor">|</span>
+        </h1>
+        <p class="text-muted mb-4" style="font-size:0.9rem;">
+          {% if hero %}{{ hero.bio }}{% else %}Fintech student &amp; developer passionate about building real-world web applications.{% endif %}
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{% url 'projects:list' %}" class="btn btn-primary-custom px-4">
+            <i class="fas fa-code me-2"></i>View Projects
+          </a>
+          {% if hero and hero.resume %}
+          <a href="{{ hero.resume_download_url }}" class="btn btn-outline-custom px-4" download>
+            <i class="fas fa-download me-2"></i>Download CV
+          </a>
+          {% endif %}
+          <a href="{% url 'contact:contact' %}" class="btn btn-outline-custom px-4">
+            <i class="fas fa-paper-plane me-2"></i>Contact
+          </a>
+        </div>
+        <!-- Social -->
+        <div class="d-flex gap-3 mt-4">
+          {% if hero and hero.github_url %}<a href="{{ hero.github_url }}" class="social-icon" target="_blank"><i class="fab fa-github fa-lg"></i></a>{% endif %}
+          {% if hero and hero.linkedin_url %}<a href="{{ hero.linkedin_url }}" class="social-icon" target="_blank"><i class="fab fa-linkedin fa-lg"></i></a>{% endif %}
+          {% if hero and hero.email %}<a href="https://mail.google.com/mail/?view=cm&to=srengseavhou@gmail.com"    target="_blank" class="social-icon"><i class="fas fa-envelope"></i></a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- ══ QUOTE / FINTECH ══ -->
+<section class="quote-section py-5" id="quote">
+  <div class="container reveal">
+    <blockquote class="fintech-quote">
+      <p>{% if hero %}{{ hero.tagline }}{% else %}my quote about fintech, here{% endif %}</p>
+    </blockquote>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- ══ FEATURED PROJECTS ══ -->
+<section class="section-padding" id="projects-preview">
+  <div class="container">
+    <div class="section-header reveal mb-4">
+      <p class="font-mono text-accent small">// my project cards</p>
+      <h2 class="section-title">Featured Projects</h2>
+    </div>
+    <div class="row g-4">
+      {% for project in featured_projects %}
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2-4 reveal">
+        <div class="project-card h-100">
+          <div class="project-thumb">
+            <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="img-fluid"/>
+            <div class="project-overlay">
+              <div class="d-flex flex-column gap-2">
+                {% if project.github_url %}<a href="{{ project.github_url }}" class="btn btn-sm btn-outline-light" target="_blank"><i class="fab fa-github"></i></a>{% endif %}
+                {% if project.live_url %}<a href="{{ project.live_url }}" class="btn btn-sm btn-outline-light" target="_blank"><i class="fas fa-external-link-alt"></i></a>{% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="p-3">
+            <span class="badge badge-category mb-1">{{ project.category }}</span>
+            <h6 class="fw-bold mb-1">{{ project.title }}</h6>
+            <p class="text-muted" style="font-size:0.75rem;">{{ project.description|truncatewords:10 }}</p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      {% for i in "12345" %}
+      <div class="col-6 col-sm-4 col-md reveal">
+        <div class="project-card-placeholder">
+          <p class="text-muted small text-center pt-3">project {{ forloop.counter }}</p>
+        </div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+    <div class="text-start mt-4 reveal">
+      <a href="{% url 'projects:list' %}" class="btn btn-outline-custom">View All Projects <i class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- ══ ABOUT ══ -->
+<section class="section-padding" id="about">
+  <div class="container">
+    <div class="section-header reveal mb-4">
+      <p class="font-mono text-accent small">// about me</p>
+      <h2 class="section-title">My personal info</h2>
+    </div>
+<div class="row g-4 align-items-start">
+
+  <!-- Card 1: Personal Info (existing) -->
+  <div class="col-md-4 reveal">
+    <div class="about-info-card p-4 h-100">
+      <ul class="about-list">
+        <li><span class="about-label">Name</span><span>Sreng Seavhou</span></li>
+        <li><span class="about-label">Age</span><span>20</span></li>
+        <li><span class="about-label">Uni</span><span>ACLEDA University of Business</span></li>
+        <li><span class="about-label">Major</span><span>Fintech (2nd year)</span></li>
+        <li><span class="about-label">Location</span><span>{{ hero.location }}</span></li>
+        <li><span class="about-label">Available</span><span>{{ hero.get_availability_display }}</span></li>
+      </ul>
+      {% if hero.resume %}
+      <a href="{{ hero.resume_download_url }}" class="btn btn-primary-custom w-100 mt-3" download>
+        <i class="fas fa-download me-2"></i>Download Resume
+      </a>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- Card 2: Skills -->
+  <div class="col-md-8 reveal">
+    <div class="about-info-card p-4 h-100">
+      <div class="row g-4">
+
+        <!-- Coding Section -->
+        <div class="col-sm-6">
+          <div class="skill-section-header mb-3">
+            <i class="fas fa-code me-2 text-accent"></i>
+            <span class="skill-section-title">Coding</span>
+          </div>
+          {% if coding_by_category %}
+            {% for category, skills in coding_by_category.items %}
+            <div class="skill-category-row mb-3">
+              <span class="skill-category-label">{{ category }}</span>
+              <div class="d-flex flex-wrap gap-2 mt-1">
+                {% for skill in skills %}
+                <span class="skill-badge">
+                  <i class="{{ skill.icon_class }}"></i>{{ skill.name }}
+                </span>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted small">No coding skills added yet.</p>
+          {% endif %}
+        </div>
+
+        <!-- Divider (vertical on desktop, horizontal on mobile) -->
+        <div class="col-sm-auto d-none d-sm-flex">
+          <div class="skill-divider-vertical"></div>
+        </div>
+        <hr class="d-sm-none skill-divider-horizontal"/>
+
+        <!-- IT Support Section -->
+        <div class="col-sm-5">
+          <div class="skill-section-header mb-3">
+            <i class="fas fa-screwdriver-wrench me-2 text-accent"></i>
+            <span class="skill-section-title">IT Support</span>
+          </div>
+          {% if it_skills %}
+            <div class="d-flex flex-column gap-2">
+              {% for skill in it_skills %}
+              <div class="it-skill-item">
+                <i class="{{ skill.icon_class }} me-2"></i>
+                <span>{{ skill.name }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted small">No IT support skills added yet.</p>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</section>
+
+<hr class="section-divider"/>
+
+<hr class="section-divider"/>
+
+<!-- ══ MY GALLERY CAROUSEL ══ -->
+<section class="section-padding gallery-section" id="gallery">
+  <div class="container">
+    <div class="section-header reveal mb-4">
+      <p class="font-mono text-accent small">// my gallery</p>
+      <h2 class="section-title">My Gallery</h2>
+    </div>
+
+    <div class="slider reveal">
+      <div class="slides" id="gallerySlides">
+        {% if gallery_items %}
+          {% for item in gallery_items %}
+            {% if item.link %}
+              <a href="{{ item.link }}" target="_blank" class="slide-link">
+            {% endif %}
+            <div class="slide-item">
+              <img src="{{ item.image.url }}" alt="{{ item.title }}"/>
+              <div class="slide-caption">
+                {% if item.subtitle %}<span class="slide-label">{{ item.subtitle }}</span>{% endif %}
+                <p class="slide-title">{{ item.title }}</p>
+              </div>
+            </div>
+            {% if item.link %}</a>{% endif %}
+          {% endfor %}
+        {% else %}
+          <div class="slide-item">
+            <img src="https://picsum.photos/id/1018/900/500" alt="Sample 1"/>
+            <div class="slide-caption"><span class="slide-label">Label</span><p class="slide-title">Add gallery images from Django Admin panel</p></div>
+          </div>
+          <div class="slide-item">
+            <img src="https://picsum.photos/id/1015/900/500" alt="Sample 2"/>
+            <div class="slide-caption"><span class="slide-label">Label</span><p class="slide-title">Go to /admin → Gallery Items → Add Item</p></div>
+          </div>
+          <div class="slide-item">
+            <img src="https://picsum.photos/id/1016/900/500" alt="Sample 3"/>
+            <div class="slide-caption"><span class="slide-label">Label</span><p class="slide-title">Upload image, set title and subtitle</p></div>
+          </div>
+        {% endif %}
+      </div>
+
+      <button class="nav-btn prev" id="galleryPrev">&#10094;</button>
+      <button class="nav-btn next" id="galleryNext">&#10095;</button>
+
+      <div class="dots" id="galleryDots"></div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- ══ CONTACT TEASER ══ -->
+<section class="section-padding" id="contact-teaser">
+  <div class="container reveal">
+    <div class="section-header mb-4">
+      <p class="font-mono text-accent small">// contact me here</p>
+      <h2 class="section-title">Let's Work Together</h2>
+    </div>
+    <p class="text-muted mb-4" style="max-width:600px; line-height:1.9;">
+      "I'm currently open to freelance projects, collaborations, and internship opportunities. Whether you have an idea you'd like to build or just want to connect, feel free to reach out — I'd love to hear from you."
+    </p>
+    <a href="{% url 'contact:contact' %}" class="btn btn-primary-custom px-5 py-2">
+      <i class="fas fa-paper-plane me-2"></i>Get In Touch
+    </a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const phrases = [
+    "Seavhou Sreng!",
+    "a developer!",
+    "so super sigma!",
+  ];
+  let i = 0, j = 0, deleting = false;
+  const el = document.getElementById('typed-text');
+  function type() {
+    if (!el) return;
+    const word = phrases[i];
+    el.textContent = deleting ? word.substring(0, j--) : word.substring(0, j++);
+    if (!deleting && j === word.length + 1) { deleting = true; setTimeout(type, 1500); return; }
+    if (deleting && j === 0) { deleting = false; i = (i + 1) % phrases.length; }
+    setTimeout(type, deleting ? 60 : 110);
+  }
+  type();
+</script>
+{% endblock %}
