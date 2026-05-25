@@ -78,7 +78,9 @@ class GalleryItem(models.Model):
     link = models.URLField(blank=True)
     order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.PositiveIntegerField(default=0)       
+    dislikes = models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.title
 

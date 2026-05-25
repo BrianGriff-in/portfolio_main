@@ -1,5 +1,6 @@
-
-
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
 # Create your views here.
 from django.shortcuts import render
 from .models import HeroSection, Skill, GalleryItem
@@ -46,3 +47,25 @@ class SkillListAPI(generics.ListAPIView):
 class GalleryListAPI(generics.ListAPIView):
     queryset = GalleryItem.objects.filter(is_active=True)
     serializer_class = GalleryItemSerializer
+
+@require_POST
+def gallery_like(request, pk):
+    item = get_object_or_404(GalleryItem, pk=pk)
+    action = request.POST.get('action')  # 'like' or 'dislike'
+    if action == 'like':
+        item.likes += 1
+        item.save(update_fields=['likes'])
+        return JsonResponse({'likes': item.likes})
+    elif action == 'unlike':
+        item.likes = max(0, item.likes - 1)
+        item.save(update_fields=['likes'])
+        return JsonResponse({'likes': item.likes})
+    elif action == 'dislike':
+        item.dislikes += 1
+        item.save(update_fields=['dislikes'])
+        return JsonResponse({'dislikes': item.dislikes})
+    elif action == 'undislike':
+        item.dislikes = max(0, item.dislikes - 1)
+        item.save(update_fields=['dislikes'])
+        return JsonResponse({'dislikes': item.dislikes})
+    return JsonResponse({'error': 'invalid action'}, status=400)

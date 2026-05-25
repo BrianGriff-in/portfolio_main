@@ -211,6 +211,7 @@
 <hr class="section-divider"/>
 
 <!-- ══ MY GALLERY CAROUSEL ══ -->
+<!-- ══ MY GALLERY CAROUSEL ══ -->
 <section class="section-padding gallery-section" id="gallery">
   <div class="container">
     <div class="section-header reveal mb-4">
@@ -222,42 +223,69 @@
       <div class="slides" id="gallerySlides">
         {% if gallery_items %}
           {% for item in gallery_items %}
-            {% if item.link %}
-              <a href="{{ item.link }}" target="_blank" class="slide-link">
-            {% endif %}
-            <div class="slide-item">
+          <div class="slide-item" data-id="{{ item.pk }}">
+            {% if item.link %}<a href="{{ item.link }}" target="_blank" class="slide-link">{% endif %}
               <img src="{{ item.image.url }}" alt="{{ item.title }}"/>
-              <div class="slide-caption">
-                {% if item.subtitle %}<span class="slide-label">{{ item.subtitle }}</span>{% endif %}
-                <p class="slide-title">{{ item.title }}</p>
+            {% if item.link %}</a>{% endif %}
+            <div class="slide-caption">
+              <div class="slide-meta">
+                {% if item.subtitle %}
+                <span class="slide-source"><i class="fas fa-images"></i>{{ item.subtitle }}</span>
+                {% endif %}
+                <span class="slide-time">{{ item.created_at|timesince }} ago</span>
+              </div>
+              <p class="slide-title">{{ item.title }}</p>
+              <div class="slide-actions">
+                <button class="like-btn" onclick="toggleLike(this, 'like')">
+                  <i class="far fa-thumbs-up"></i>
+                  <span class="like-count">{{ item.likes }}</span>
+                </button>
+                <button class="like-btn dislike-btn" onclick="toggleLike(this, 'dislike')">
+                  <i class="far fa-thumbs-down"></i>
+                  <span class="dislike-count">{{ item.dislikes }}</span>
+                </button>
               </div>
             </div>
-            {% if item.link %}</a>{% endif %}
+          </div>
           {% endfor %}
         {% else %}
           <div class="slide-item">
             <img src="https://picsum.photos/id/1018/900/500" alt="Sample 1"/>
-            <div class="slide-caption"><span class="slide-label">Label</span><p class="slide-title">Add gallery images from Django Admin panel</p></div>
+            <div class="slide-caption">
+              <div class="slide-meta">
+                <span class="slide-source"><i class="fas fa-images"></i>Gallery</span>
+                <span class="slide-time">just now</span>
+              </div>
+              <p class="slide-title">Add gallery images from Django Admin panel</p>
+              <div class="slide-actions">
+                <button class="like-btn" onclick="toggleLike(this)"><i class="far fa-thumbs-up"></i><span class="like-count">0</span></button>
+                <button class="like-btn dislike-btn" onclick="toggleLike(this)"><i class="far fa-thumbs-down"></i></button>
+              </div>
+            </div>
           </div>
           <div class="slide-item">
             <img src="https://picsum.photos/id/1015/900/500" alt="Sample 2"/>
-            <div class="slide-caption"><span class="slide-label">Label</span><p class="slide-title">Go to /admin → Gallery Items → Add Item</p></div>
-          </div>
-          <div class="slide-item">
-            <img src="https://picsum.photos/id/1016/900/500" alt="Sample 3"/>
-            <div class="slide-caption"><span class="slide-label">Label</span><p class="slide-title">Upload image, set title and subtitle</p></div>
+            <div class="slide-caption">
+              <div class="slide-meta">
+                <span class="slide-source"><i class="fas fa-images"></i>Gallery</span>
+                <span class="slide-time">just now</span>
+              </div>
+              <p class="slide-title">Go to /admin → Gallery Items → Add Item</p>
+              <div class="slide-actions">
+                <button class="like-btn" onclick="toggleLike(this)"><i class="far fa-thumbs-up"></i><span class="like-count">0</span></button>
+                <button class="like-btn dislike-btn" onclick="toggleLike(this)"><i class="far fa-thumbs-down"></i></button>
+              </div>
+            </div>
           </div>
         {% endif %}
       </div>
 
       <button class="nav-btn prev" id="galleryPrev">&#10094;</button>
       <button class="nav-btn next" id="galleryNext">&#10095;</button>
-
       <div class="dots" id="galleryDots"></div>
     </div>
   </div>
 </section>
-
 <hr class="section-divider"/>
 
 <!-- ══ CONTACT TEASER ══ -->
@@ -296,5 +324,36 @@
     setTimeout(type, deleting ? 60 : 110);
   }
   type();
+
+ function toggleLike(btn, action) {
+  const slideItem = btn.closest('.slide-item');
+  const pk = slideItem.dataset.id;
+  const isLike = action === 'like';
+  const wasActive = btn.classList.contains('liked') || btn.classList.contains('disliked');
+  const finalAction = wasActive ? 'un' + action : action;
+  const icon = btn.querySelector('i');
+  const countEl = btn.querySelector(isLike ? '.like-count' : '.dislike-count');
+
+  fetch(`/gallery/${pk}/like/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `action=${finalAction}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (isLike) {
+      btn.classList.toggle('liked');
+      icon.className = btn.classList.contains('liked') ? 'fas fa-thumbs-up' : 'far fa-thumbs-up';
+      if (data.likes !== undefined) countEl.textContent = data.likes;
+    } else {
+      btn.classList.toggle('disliked');
+      icon.className = btn.classList.contains('disliked') ? 'fas fa-thumbs-down' : 'far fa-thumbs-down';
+      if (data.dislikes !== undefined) countEl.textContent = data.dislikes;
+    }
+  });
+}
 </script>
 {% endblock %}

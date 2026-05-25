@@ -66,56 +66,58 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ── My Gallery Carousel ── */
-  const slidesEl  = document.getElementById('gallerySlides');
-  const prevBtn2  = document.getElementById('galleryPrev');
-  const nextBtn2  = document.getElementById('galleryNext');
-  const dotsEl    = document.getElementById('galleryDots');
+/* ── My Gallery Carousel ── */
+const slidesEl = document.getElementById('gallerySlides');
+const prevBtn2 = document.getElementById('galleryPrev');
+const nextBtn2 = document.getElementById('galleryNext');
+const dotsEl   = document.getElementById('galleryDots');
 
-  if (slidesEl && prevBtn2 && nextBtn2) {
-    const items = slidesEl.querySelectorAll('.slide-item');
-    const total = items.length;
-    let current = 0;
-    let timer;
+if (slidesEl && prevBtn2 && nextBtn2) {
+  const items = slidesEl.querySelectorAll('.slide-item');
+  const total = items.length;
+  let current = 0;
+  let timer;
 
-    // Build dots dynamically
-    dotsEl.innerHTML = '';
-    items.forEach((_, i) => {
-      const d = document.createElement('div');
-      d.className = 'dot' + (i === 0 ? ' active' : '');
-      d.addEventListener('click', () => { goTo(i); resetTimer(); });
-      dotsEl.appendChild(d);
-    });
+  // Force widths via JS
+  slidesEl.style.width = (total * 100) + '%';
+  items.forEach(item => item.style.width = (100 / total) + '%');
 
-    const allDots = dotsEl.querySelectorAll('.dot');
+  // Build dots
+  dotsEl.innerHTML = '';
+  items.forEach((_, idx) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (idx === 0 ? ' active' : '');
+    d.addEventListener('click', () => { goTo(idx); resetTimer(); });
+    dotsEl.appendChild(d);
+  });
 
-    function goTo(i) {
-      current = (i + total) % total;
-      slidesEl.style.transform = `translateX(${-current * 100}%)`;
-      allDots.forEach(d => d.classList.remove('active'));
-      if (allDots[current]) allDots[current].classList.add('active');
-    }
+  const allDots = dotsEl.querySelectorAll('.dot');
 
-    function resetTimer() {
-      clearInterval(timer);
-      timer = setInterval(() => goTo(current + 1), 3000);
-    }
-
-    prevBtn2.addEventListener('click', () => { goTo(current - 1); resetTimer(); });
-    nextBtn2.addEventListener('click', () => { goTo(current + 1); resetTimer(); });
-
-    // Touch / swipe
-    let touchStartX = 0;
-    slidesEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    slidesEl.addEventListener('touchend', e => {
-      const diff = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); resetTimer(); }
-    });
-
-    // Pause on hover
-    slidesEl.closest('.slider').addEventListener('mouseenter', () => clearInterval(timer));
-    slidesEl.closest('.slider').addEventListener('mouseleave', resetTimer);
-
-    // Init
-    goTo(0);
-    resetTimer();
+  function goTo(i) {
+    current = (i + total) % total;
+    slidesEl.style.transform = `translateX(-${current * (100 / total)}%)`;
+    allDots.forEach(d => d.classList.remove('active'));
+    if (allDots[current]) allDots[current].classList.add('active');
   }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => goTo(current + 1), 3000);
+  }
+
+  prevBtn2.addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+  nextBtn2.addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+
+  let touchStartX = 0;
+  slidesEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  slidesEl.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); resetTimer(); }
+  });
+
+  slidesEl.closest('.slider').addEventListener('mouseenter', () => clearInterval(timer));
+  slidesEl.closest('.slider').addEventListener('mouseleave', resetTimer);
+
+  goTo(0);
+  resetTimer();
+}
