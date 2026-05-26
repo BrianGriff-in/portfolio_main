@@ -602,7 +602,7 @@ body {
 
 .skill-badge:hover {
   border-color: var(--accent);
-  color: #fff;
+  color: var(--danger);
 }
 
 .it-skill-item {
