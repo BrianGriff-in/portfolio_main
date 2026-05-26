@@ -7,7 +7,7 @@
   <meta name="description" content="Sreng Seavhou — Fintech & Full-Stack Developer Portfolio"/>
 
   {% if hero and hero.favicon %}
-  <link rel="icon" type="image/png" href="https://res.cloudinary.com/{{ hero.favicon }}">
+  <link rel="icon" type="image/png" href="{{ hero.favicon.url }}">
   {% endif %}
   <title>{% block title %}Sreng Seavhou{% endblock %}</title>
 

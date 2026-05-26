@@ -97,6 +97,7 @@ cloudinary.config(
     cloud_name = config('CLOUDINARY_CLOUD_NAME', default='debsx5dvd'),
     api_key = config('CLOUDINARY_API_KEY', default='345322646327772'),
     api_secret = config('CLOUDINARY_API_SECRET', default='9VsNYCDlUBVPoBN9e7ELyTczqDw')
+    secure = True  # add this — forces https on all URLs
 )
 
 STORAGES = {
