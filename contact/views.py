@@ -4,9 +4,10 @@ from rest_framework import generics
 from .models import ContactMessage
 from .forms import ContactForm
 from .serializers import ContactMessageSerializer
+from home.models import HeroSection  # add this
 
-# Template view
 def contact(request):
+    hero = HeroSection.objects.first()  # add this
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -15,9 +16,8 @@ def contact(request):
             return redirect('contact:contact')
     else:
         form = ContactForm()
-    return render(request, 'contact/contact.html', {'form': form})
+    return render(request, 'contact/contact.html', {'form': form, 'hero': hero})
 
-# API views
 class ContactMessageListAPI(generics.ListAPIView):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer

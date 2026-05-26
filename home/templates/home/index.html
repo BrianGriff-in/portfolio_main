@@ -325,7 +325,7 @@
   }
   type();
 
- function toggleLike(btn, action) {
+function toggleLike(btn, action) {
   const slideItem = btn.closest('.slide-item');
   const pk = slideItem.dataset.id;
   const isLike = action === 'like';
@@ -334,10 +334,13 @@
   const icon = btn.querySelector('i');
   const countEl = btn.querySelector(isLike ? '.like-count' : '.dislike-count');
 
+  // FIX: get CSRF from template tag, not cookie
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
   fetch(`/gallery/${pk}/like/`, {
     method: 'POST',
     headers: {
-      'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '',
+      'X-CSRFToken': csrfToken,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: `action=${finalAction}`

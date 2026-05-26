@@ -5,6 +5,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-eb@1$%9ehaju-0z0^fxytq6slm13)c&@ey^6$emlu9da+v)@0z')
