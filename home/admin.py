@@ -9,18 +9,18 @@ class HeroSectionAdmin(admin.ModelAdmin):
     readonly_fields = ('profile_preview',)
 
     fieldsets = (
-        ('Identity', {
-            'fields': ('name', 'profile_image', 'profile_preview', 'bio', 'tagline')
-        }),
-        ('Personal Info', {
-            'fields': ('location', 'availability', 'languages', 'interests')
-        }),
-        ('Contact & Links', {
-            'fields': ('email', 'github_url', 'linkedin_url', 'resume')
-        }),
-        ("Let's Work Together", {
-            'fields': ('contact_blurb',)
-        }),
+    ('Identity', {
+        'fields': ('name', 'profile_image', 'profile_preview', 'bio', 'tagline', 'favicon')  # add favicon here
+    }),
+    ('Personal Info', {
+        'fields': ('location', 'availability', 'languages', 'interests')
+    }),
+    ('Contact & Links', {
+        'fields': ('email', 'github_url', 'linkedin_url', 'resume')
+    }),
+    ("Let's Work Together", {
+        'fields': ('contact_blurb',)
+    }),
     )
 
     def profile_preview(self, obj):

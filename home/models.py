@@ -19,7 +19,7 @@ class HeroSection(models.Model):
     linkedin_url = models.URLField(blank=True)
     email = models.EmailField()
     location = models.CharField(max_length=100, default='Phnom Penh, Cambodia')
-    favicon = CloudinaryField('image', blank=True, null=True)  # add this
+    favicon = CloudinaryField('favicon', blank=True, null=True)  # add this
     availability = models.CharField(
         max_length=20,
         choices=AVAILABILITY_CHOICES,
