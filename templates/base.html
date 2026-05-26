@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="Sreng Seavhou — Fintech & Full-Stack Developer Portfolio"/>
 
-    {% if hero and hero.favicon %}
-    <link rel="icon" type="image/png" href="{{ hero.favicon.url|cut:'http:'|add:'https:' }}">
-    {% endif %}
+  {% if hero and hero.favicon %}
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/{{ hero.favicon }}">
+  {% endif %}
   <title>{% block title %}Sreng Seavhou{% endblock %}</title>
 
   <!-- Prevent theme flash -->
