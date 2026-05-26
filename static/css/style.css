@@ -25,6 +25,7 @@
   --green:    #1a7f37;
   --text:     #1f2328;
   --muted:    #57606a;
+  --danger:   #dc3545;
   --shadow:   0 4px 24px rgba(0,0,0,0.08);
 }
 
@@ -276,7 +277,7 @@ body {
   cursor: default;
 }
 .skill-icon-item i { font-size: 2rem; }
-.skill-icon-item:hover { color: var(--accent); transform: translateY(-3px); }
+.skill-icon-item:hover { color: var(--danger); transform: translateY(-3px); }
 
 /* ══════════════════════════════════════
    CONTACT PAGE
