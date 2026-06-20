@@ -38,6 +38,22 @@ document.addEventListener('DOMContentLoaded', () => {
     themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
   }
 
+  /* ── Mobile Nav Toggler (hamburger <-> X) ── */
+  const navMenu = document.getElementById('navMenu');
+  const navToggler = document.getElementById('navMenuToggler');
+
+  if (navMenu && navToggler && window.bootstrap) {
+    const navCollapse = bootstrap.Collapse.getOrCreateInstance(navMenu, { toggle: false });
+
+    navMenu.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (navMenu.classList.contains('show')) {
+          navCollapse.hide();
+        }
+      });
+    });
+  }
+
   /* ── Scroll Reveal ── */
   const observer = new IntersectionObserver(
     entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),

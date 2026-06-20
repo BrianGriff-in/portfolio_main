@@ -40,8 +40,18 @@
 <nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
   <div class="container-fluid px-4">
     <a class="navbar-brand" href="{% url 'home:index' %}">Sreng Seavhou</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-      <span class="navbar-toggler-icon"></span>
+    <button
+      class="navbar-toggler nav-menu-toggler collapsed"
+      type="button"
+      id="navMenuToggler"
+      data-bs-toggle="collapse"
+      data-bs-target="#navMenu"
+      aria-controls="navMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars nav-toggler-icon nav-toggler-icon--open" aria-hidden="true"></i>
+      <i class="fas fa-xmark nav-toggler-icon nav-toggler-icon--close" aria-hidden="true"></i>
     </button>
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto align-items-center gap-1">
