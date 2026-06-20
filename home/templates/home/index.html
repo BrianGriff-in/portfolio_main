@@ -205,8 +205,16 @@
             {% if item.link %}
               <a href="{{ item.link }}" target="_blank" class="slide-link">
             {% endif %}
-            <div class="slide-item">
+            <div class="slide-item" data-item-id="{{ item.id }}">
               <img src="{{ item.image.url }}" alt="{{ item.title }}"/>
+              <div class="slide-vote-bar" data-item-id="{{ item.id }}">
+                <button type="button" class="vote-btn vote-like" data-vote="like" aria-label="Like this photo">
+                  <i class="fas fa-thumbs-up"></i>
+                </button>
+                <button type="button" class="vote-btn vote-dislike" data-vote="dislike" aria-label="Dislike this photo">
+                  <i class="fas fa-thumbs-down"></i>
+                </button>
+              </div>
               <div class="slide-caption">
                 {% if item.subtitle %}<span class="slide-label">{{ item.subtitle }}</span>{% endif %}
                 <p class="slide-title">{{ item.title }}</p>
@@ -259,6 +267,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script id="gallery-votes-data" type="application/json">{{ gallery_votes_json|safe }}</script>
 <script>
   const phrases = [
     "Seavhou Sreng!",

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import HeroSection, Skill, GalleryItem
+from .models import HeroSection, Skill, GalleryItem, GalleryVote
 
 
 @admin.register(HeroSection)
@@ -56,3 +56,11 @@ class GalleryItemAdmin(admin.ModelAdmin):
             )
         return '—'
     image_preview.short_description = 'Preview'
+
+
+@admin.register(GalleryVote)
+class GalleryVoteAdmin(admin.ModelAdmin):
+    list_display = ('gallery_item', 'vote_type', 'visitor_id', 'updated_at')
+    list_filter = ('vote_type',)
+    search_fields = ('visitor_id', 'gallery_item__title')
+    readonly_fields = ('created_at', 'updated_at')

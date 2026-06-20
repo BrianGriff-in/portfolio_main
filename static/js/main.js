@@ -52,6 +52,64 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   if (btn) btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
+  /* ── Gallery Votes ── */
+  const voteDataEl = document.getElementById('gallery-votes-data');
+  const voteBars = document.querySelectorAll('.slide-vote-bar');
+
+  if (voteDataEl && voteBars.length) {
+    const galleryVotes = JSON.parse(voteDataEl.textContent || '{}');
+
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? decodeURIComponent(match[2]) : null;
+    }
+
+    function applyVoteState(bar, voteType) {
+      bar.querySelectorAll('.vote-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.vote === voteType);
+      });
+    }
+
+    voteBars.forEach(bar => {
+      const itemId = bar.dataset.itemId;
+      applyVoteState(bar, galleryVotes[itemId] || null);
+    });
+
+    voteBars.forEach(bar => {
+      bar.addEventListener('click', async (event) => {
+        const btn = event.target.closest('.vote-btn');
+        if (!btn || btn.disabled) return;
+
+        const itemId = bar.dataset.itemId;
+        const voteType = btn.dataset.vote;
+        const buttons = bar.querySelectorAll('.vote-btn');
+        buttons.forEach(b => { b.disabled = true; });
+
+        try {
+          const response = await fetch('/api/gallery/vote/', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ item_id: Number(itemId), vote_type: voteType }),
+          });
+
+          if (!response.ok) throw new Error('Vote request failed');
+
+          const data = await response.json();
+          galleryVotes[itemId] = data.vote_type;
+          applyVoteState(bar, data.vote_type);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          buttons.forEach(b => { b.disabled = false; });
+        }
+      });
+    });
+  }
+
   /* ── Project Filter ── */
   document.querySelectorAll('.filter-btn').forEach(b => {
     b.addEventListener('click', function () {

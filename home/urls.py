@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/hero/', views.HeroSectionAPI.as_view(), name='api-hero'),
     path('api/skills/', views.SkillListAPI.as_view(), name='api-skills'),
     path('api/gallery/', views.GalleryListAPI.as_view(), name='api-gallery'),
+    path('api/gallery/vote/', views.GalleryVoteAPI.as_view(), name='api-gallery-vote'),
 ]
