@@ -5,8 +5,6 @@ app_name = 'projects'
 
 urlpatterns = [
     path('', views.project_list, name='list'),
-        # existing template routes
-    path('', views.project_list, name='list'),
     path('<int:pk>/', views.project_detail, name='detail'),
 
     # API routes

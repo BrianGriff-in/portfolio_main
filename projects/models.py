@@ -25,5 +25,24 @@ class Project(models.Model):
     def tech_list(self):
         return [t.strip() for t in self.tech_stack.split(',')]
 
+    @classmethod
+    def distinct_categories(cls):
+        """Categories that have at least one project, deduplicated with stable ordering."""
+        label_map = dict(cls.CATEGORY_CHOICES)
+        values = (
+            cls.objects.order_by('category')
+            .values_list('category', flat=True)
+            .distinct()
+        )
+        return [{'value': value, 'label': label_map.get(value, value)} for value in values]
+
+    @classmethod
+    def for_homepage(cls, limit=5):
+        """Featured projects for the homepage, falling back to the latest projects."""
+        featured = cls.objects.filter(featured=True)[:limit]
+        if featured:
+            return featured
+        return cls.objects.all()[:limit]
+
     class Meta:
         ordering = ['-created_at']

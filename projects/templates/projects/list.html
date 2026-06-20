@@ -14,47 +14,14 @@
     <div class="filter-bar d-flex flex-wrap justify-content-center gap-2 mb-5 reveal">
       <button class="btn filter-btn active" data-filter="all">All</button>
       {% for category in categories %}
-        <button class="btn filter-btn" data-filter="{{ category }}">{{ category }}</button>
+        <button class="btn filter-btn" data-filter="{{ category.value }}">{{ category.label }}</button>
       {% endfor %}
     </div>
 
     <!-- Projects Grid -->
     <div class="row g-4" id="projects-grid">
       {% for project in projects %}
-      <div class="col-md-6 col-lg-4 project-item reveal" data-category="{{ project.category }}">
-        <div class="project-card h-100">
-          <div class="project-thumb">
-            <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="img-fluid"/>
-            <div class="project-overlay">
-              <div class="d-flex gap-2">
-                {% if project.github_url %}
-                  <a href="{{ project.github_url }}" class="btn btn-sm btn-outline-light" target="_blank">
-                    <i class="fab fa-github me-1"></i>Code
-                  </a>
-                {% endif %}
-                {% if project.live_url %}
-                  <a href="{{ project.live_url }}" class="btn btn-sm btn-outline-light" target="_blank">
-                    <i class="fas fa-external-link-alt me-1"></i>Live
-                  </a>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-          <div class="project-body p-4">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="badge badge-category">{{ project.category }}</span>
-              <small class="text-muted font-mono">{{ project.created_at|date:"M Y" }}</small>
-            </div>
-            <h5 class="fw-bold mb-2">{{ project.title }}</h5>
-            <p class="text-muted small mb-3">{{ project.description|truncatewords:25 }}</p>
-            <div class="tech-badges d-flex flex-wrap gap-1">
-              {% for tech in project.tech_list %}
-                <span class="badge badge-tech">{{ tech }}</span>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-      </div>
+        {% include 'projects/_project_card.html' with project=project filterable=True compact=False %}
       {% empty %}
       <div class="col-12 text-center py-5">
         <i class="fas fa-folder-open fa-3x text-muted mb-3 d-block"></i>
@@ -64,20 +31,4 @@
     </div>
   </div>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      const filter = this.dataset.filter;
-      document.querySelectorAll('.project-item').forEach(item => {
-        const match = filter === 'all' || item.dataset.category === filter;
-        item.style.display = match ? 'block' : 'none';
-      });
-    });
-  });
-</script>
 {% endblock %}

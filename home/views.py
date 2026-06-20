@@ -18,14 +18,13 @@ def home(request):
         coding_by_category.setdefault(skill.category, []).append(skill)
 
     gallery_items = GalleryItem.objects.filter(is_active=True)
-    featured_projects = Project.objects.filter(featured=True)[:5]
 
     return render(request, 'home/index.html', {
         'hero': hero,
         'coding_by_category': coding_by_category,
         'it_skills': it_skills,
         'gallery_items': gallery_items,
-        'featured_projects': featured_projects,  # ← was missing
+        'featured_projects': Project.for_homepage(),
     })
 
 def error_404(request, exception):

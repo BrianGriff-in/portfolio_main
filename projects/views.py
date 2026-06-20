@@ -4,15 +4,12 @@ from .models import Project
 from .serializers import ProjectSerializer
 
 def project_list(request):
-    projects = Project.objects.all()
-    categories = Project.objects.values_list('category', flat=True).distinct()
-    context = {
-        'projects': projects,
-        'categories': categories,
-    }
-    return render(request, 'projects/list.html', context)
+    return render(request, 'projects/list.html', {
+        'projects': Project.objects.all(),
+        'categories': Project.distinct_categories(),
+    })
 
-def project_detail(request, pk):                           # ← ADD THIS
+def project_detail(request, pk):
     project = get_object_or_404(Project, pk=pk)
     return render(request, 'projects/detail.html', {'project': project})
 
