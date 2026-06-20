@@ -1,4 +1,4 @@
-<div class="{% if compact %}col-6 col-sm-4 col-md-3 col-lg-2-4{% else %}col-md-6 col-lg-4{% endif %}{% if filterable %} project-item{% endif %} reveal"{% if filterable %} data-category="{{ project.category }}"{% endif %}>
+<div class="{% if compact %}col-6 col-sm-4 col-md-3 col-lg-2-4{% else %}col-md-6 col-lg-4{% endif %}{% if filterable %} project-item{% endif %}{% if featured_home %} featured-project-card{% endif %} reveal"{% if filterable %} data-category="{{ project.category }}"{% endif %}>
   <div class="project-card h-100">
     <div class="project-thumb">
       <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="img-fluid"/>
