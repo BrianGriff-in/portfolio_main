@@ -89,3 +89,33 @@ class GalleryItem(models.Model):
         ordering = ['order']
         verbose_name = 'Gallery Item'
         verbose_name_plural = 'Gallery Items'
+
+
+class GalleryVote(models.Model):
+    VOTE_CHOICES = [
+        ('like', 'Like'),
+        ('dislike', 'Dislike'),
+    ]
+
+    gallery_item = models.ForeignKey(
+        GalleryItem,
+        on_delete=models.CASCADE,
+        related_name='votes',
+    )
+    visitor_id = models.CharField(max_length=64, db_index=True)
+    vote_type = models.CharField(max_length=10, choices=VOTE_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.gallery_item_id}:{self.visitor_id}:{self.vote_type}'
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['gallery_item', 'visitor_id'],
+                name='unique_gallery_visitor_vote',
+            ),
+        ]
+        verbose_name = 'Gallery Vote'
+        verbose_name_plural = 'Gallery Votes'

@@ -1,0 +1,41 @@
+<div class="{% if compact %}col-6 col-sm-4 col-md-3 col-lg-2-4{% else %}col-md-6 col-lg-4{% endif %}{% if filterable %} project-item{% endif %} reveal"{% if filterable %} data-category="{{ project.category }}"{% endif %}>
+  <div class="project-card h-100">
+    <div class="project-thumb">
+      <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="img-fluid"/>
+      <div class="project-overlay">
+        <div class="d-flex {% if compact %}flex-column{% else %}flex-row{% endif %} gap-2">
+          {% if project.github_url %}
+            <a href="{{ project.github_url }}" class="btn btn-sm btn-outline-light" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-github{% if not compact %} me-1{% endif %}"></i>{% if not compact %}Code{% endif %}
+            </a>
+          {% endif %}
+          {% if project.live_url %}
+            <a href="{{ project.live_url }}" class="btn btn-sm btn-outline-light" target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-external-link-alt{% if not compact %} me-1{% endif %}"></i>{% if not compact %}Live{% endif %}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="{% if compact %}p-3{% else %}project-body p-4{% endif %}">
+      <div class="d-flex align-items-center{% if compact %} mb-1{% else %} justify-content-between mb-2{% endif %}">
+        <span class="badge badge-category">{{ project.get_category_display }}</span>
+        {% if not compact %}
+          <small class="text-muted font-mono">{{ project.created_at|date:"M Y" }}</small>
+        {% endif %}
+      </div>
+      {% if compact %}
+        <h6 class="fw-bold mb-1">{{ project.title }}</h6>
+        <p class="text-muted mb-0" style="font-size:0.75rem;">{{ project.description|truncatewords:10 }}</p>
+      {% else %}
+        <h5 class="fw-bold mb-2">{{ project.title }}</h5>
+        <p class="text-muted small mb-3">{{ project.description|truncatewords:25 }}</p>
+        <div class="tech-badges d-flex flex-wrap gap-1">
+          {% for tech in project.tech_list %}
+            <span class="badge badge-tech">{{ tech }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

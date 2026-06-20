@@ -5,15 +5,11 @@ from .serializers import ProjectSerializer
 from home.models import HeroSection  # add this
 
 def project_list(request):
-    projects = Project.objects.all()
-    categories = Project.objects.values_list('category', flat=True).distinct()
-    hero = HeroSection.objects.first()  # add this
-    context = {
-        'projects': projects,
-        'categories': categories,
-        'hero': hero,
-    }
-    return render(request, 'projects/list.html', context)
+    return render(request, 'projects/list.html', {
+        'projects': Project.objects.all(),
+        'categories': Project.distinct_categories(),
+        'hero': HeroSection.objects.first(),
+    })
 
 def project_detail(request, pk):
     project = get_object_or_404(Project, pk=pk)

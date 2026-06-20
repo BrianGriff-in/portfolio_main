@@ -78,32 +78,12 @@
     </div>
     <div class="row g-4">
       {% for project in featured_projects %}
-      <div class="col-6 col-sm-4 col-md-3 col-lg-2-4 reveal">
-        <div class="project-card h-100">
-          <div class="project-thumb">
-            <img src="{{ project.thumbnail.url }}" alt="{{ project.title }}" class="img-fluid"/>
-            <div class="project-overlay">
-              <div class="d-flex flex-column gap-2">
-                {% if project.github_url %}<a href="{{ project.github_url }}" class="btn btn-sm btn-outline-light" target="_blank"><i class="fab fa-github"></i></a>{% endif %}
-                {% if project.live_url %}<a href="{{ project.live_url }}" class="btn btn-sm btn-outline-light" target="_blank"><i class="fas fa-external-link-alt"></i></a>{% endif %}
-              </div>
-            </div>
-          </div>
-          <div class="p-3">
-            <span class="badge badge-category mb-1">{{ project.category }}</span>
-            <h6 class="fw-bold mb-1">{{ project.title }}</h6>
-            <p class="text-muted" style="font-size:0.75rem;">{{ project.description|truncatewords:10 }}</p>
-          </div>
-        </div>
-      </div>
+        {% include 'projects/_project_card.html' with project=project compact=True filterable=False %}
       {% empty %}
-      {% for i in "12345" %}
-      <div class="col-6 col-sm-4 col-md reveal">
-        <div class="project-card-placeholder">
-          <p class="text-muted small text-center pt-3">project {{ forloop.counter }}</p>
-        </div>
+      <div class="col-12 text-center py-5">
+        <i class="fas fa-folder-open fa-3x text-muted mb-3 d-block"></i>
+        <p class="text-muted">No projects yet. Add some from the admin panel.</p>
       </div>
-      {% endfor %}
       {% endfor %}
     </div>
     <div class="text-start mt-4 reveal">
@@ -213,6 +193,7 @@
 <!-- ══ MY GALLERY CAROUSEL ══ -->
 <!-- ══ MY GALLERY CAROUSEL ══ -->
 <section class="section-padding gallery-section" id="gallery">
+  {% csrf_token %}
   <div class="container">
     <div class="section-header reveal mb-4">
       <p class="font-mono text-accent small">// my gallery</p>
@@ -307,6 +288,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script id="gallery-votes-data" type="application/json">{{ gallery_votes_json|safe }}</script>
 <script>
   const phrases = [
     "Seavhou Sreng!",
@@ -325,38 +307,71 @@
   }
   type();
 
+function applyGalleryVoteUI(slideItem, voteType, likes, dislikes) {
+  const likeBtn = slideItem.querySelector('.like-btn:not(.dislike-btn)');
+  const dislikeBtn = slideItem.querySelector('.dislike-btn');
+  if (!likeBtn || !dislikeBtn) return;
+
+  const likeIcon = likeBtn.querySelector('i');
+  const dislikeIcon = dislikeBtn.querySelector('i');
+  const likeCount = likeBtn.querySelector('.like-count');
+  const dislikeCount = dislikeBtn.querySelector('.dislike-count');
+
+  likeBtn.classList.toggle('liked', voteType === 'like');
+  dislikeBtn.classList.toggle('disliked', voteType === 'dislike');
+  likeIcon.className = voteType === 'like' ? 'fas fa-thumbs-up' : 'far fa-thumbs-up';
+  dislikeIcon.className = voteType === 'dislike' ? 'fas fa-thumbs-down' : 'far fa-thumbs-down';
+  if (likeCount) likeCount.textContent = likes;
+  if (dislikeCount) dislikeCount.textContent = dislikes;
+}
+
 function toggleLike(btn, action) {
   const slideItem = btn.closest('.slide-item');
   const pk = slideItem.dataset.id;
-  const isLike = action === 'like';
-  const wasActive = btn.classList.contains('liked') || btn.classList.contains('disliked');
-  const finalAction = wasActive ? 'un' + action : action;
-  const icon = btn.querySelector('i');
-  const countEl = btn.querySelector(isLike ? '.like-count' : '.dislike-count');
+  if (!pk) return;
 
-  // FIX: get CSRF from template tag, not cookie
-  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+  if (!csrfInput) return;
+
+  btn.disabled = true;
+  const sibling = slideItem.querySelector(action === 'like' ? '.dislike-btn' : '.like-btn:not(.dislike-btn)');
+  if (sibling) sibling.disabled = true;
 
   fetch(`/gallery/${pk}/like/`, {
     method: 'POST',
+    credentials: 'same-origin',
     headers: {
-      'X-CSRFToken': csrfToken,
+      'X-CSRFToken': csrfInput.value,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: `action=${finalAction}`
+    body: `action=${action}`,
   })
   .then(r => r.json())
   .then(data => {
-    if (isLike) {
-      btn.classList.toggle('liked');
-      icon.className = btn.classList.contains('liked') ? 'fas fa-thumbs-up' : 'far fa-thumbs-up';
-      if (data.likes !== undefined) countEl.textContent = data.likes;
-    } else {
-      btn.classList.toggle('disliked');
-      icon.className = btn.classList.contains('disliked') ? 'fas fa-thumbs-down' : 'far fa-thumbs-down';
-      if (data.dislikes !== undefined) countEl.textContent = data.dislikes;
-    }
+    applyGalleryVoteUI(slideItem, data.vote_type, data.likes, data.dislikes);
+  })
+  .finally(() => {
+    btn.disabled = false;
+    if (sibling) sibling.disabled = false;
   });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const voteDataEl = document.getElementById('gallery-votes-data');
+  if (!voteDataEl) return;
+
+  const savedVotes = JSON.parse(voteDataEl.textContent || '{}');
+  document.querySelectorAll('.slide-item[data-id]').forEach(slideItem => {
+    const voteType = savedVotes[slideItem.dataset.id] || null;
+    const likeCount = slideItem.querySelector('.like-count');
+    const dislikeCount = slideItem.querySelector('.dislike-count');
+    applyGalleryVoteUI(
+      slideItem,
+      voteType,
+      likeCount ? likeCount.textContent : 0,
+      dislikeCount ? dislikeCount.textContent : 0,
+    );
+  });
+});
 </script>
 {% endblock %}
